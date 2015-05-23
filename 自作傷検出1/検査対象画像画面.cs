@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using OpenCvSharp;
-namespace ビンピッキング
+namespace Binpick1
 {
     public partial class 検査対象画像画面 : Form
     {

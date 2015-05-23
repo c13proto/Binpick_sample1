@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenCvSharp;
 using OpenCvSharp.CPlusPlus;
-namespace ビンピッキング
+namespace Binpick1
 {
     static class Program
     {

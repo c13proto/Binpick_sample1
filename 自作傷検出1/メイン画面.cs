@@ -11,7 +11,7 @@ using OpenCvSharp;
 using OpenCvSharp.CPlusPlus;
 using System.Runtime.InteropServices;
 using OpenCvSharp.Blob;
-namespace ビンピッキング
+namespace Binpick1
 {
 
     public partial class メイン画面 : Form

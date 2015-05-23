@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ビンピッキング", "自作傷検出1\ビンピッキング.csproj", "{23400248-4DD9-4440-8243-46A3FE1FA538}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Binpick1", "自作傷検出1\Binpick1.csproj", "{23400248-4DD9-4440-8243-46A3FE1FA538}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -126,3 +126,6 @@ C:\Users\idry7lash629\Documents\GitHub\C_sharp\ビンピッキング\自作傷�
 C:\Users\idry7lash629\Documents\GitHub\C_sharp\ビンピッキング\自作傷検出1\obj\x64\Debug\ビンピッキング.検査対象画像画面.resources
 C:\Users\idry7lash629\Documents\GitHub\C_sharp\ビンピッキング\自作傷検出1\obj\x64\Debug\ビンピッキング.メイン画面.resources
 C:\Users\idry7lash629\Documents\GitHub\C_sharp\ビンピッキング\自作傷検出1\obj\x64\Debug\ビンピッキング.評価画面.resources
+C:\Users\idry7lash629\Documents\GitHub\C_sharp\Binpick_sample1\自作傷検出1\bin\x64\Debug\自作傷検出1.exe.config
+C:\Users\idry7lash629\Documents\GitHub\C_sharp\Binpick_sample1\自作傷検出1\obj\x64\Debug\自作傷検出1.exe
+C:\Users\idry7lash629\Documents\GitHub\C_sharp\Binpick_sample1\自作傷検出1\obj\x64\Debug\自作傷検出1.pdb

@@ -14,7 +14,7 @@ using OpenCvSharp.Blob;
 using System.IO;
 using System.Threading;
 
-namespace ビンピッキング
+namespace Binpick1
 {
     public partial class 評価画面 : Form
     {

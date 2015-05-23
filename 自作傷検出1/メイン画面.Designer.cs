@@ -1,4 +1,4 @@
-﻿namespace ビンピッキング
+﻿namespace Binpick1
 {
     partial class メイン画面
     {
