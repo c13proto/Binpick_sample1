@@ -7,7 +7,7 @@ namespace Binpick1
     {
         IplImage 編集前;
         IplImage Canny実行後;
-        IplImage Canny2実行後;
+        IplImage 二値化実行後;
         public static IplImage 輪郭線差分;
         IplImage 表示中;
         private static 検査対象画像画面 _instance;
@@ -44,27 +44,36 @@ namespace Binpick1
             pictureBoxIpl1.ImageIpl = 表示中;
             sample.Dispose();
         }
-
+        private void 二値化と膨張()
+        {
+            if (二値化実行後 != null) 二値化実行後.Dispose();
+            IplImage sample = 編集前.Clone();
+            Cv.Threshold(sample, sample, trackBar_Binary.Value, 255, ThresholdType.Binary);
+            Cv.Dilate(sample,sample,null,2);
+            表示中 = sample.Clone();
+            二値化実行後 = sample.Clone();
+            pictureBoxIpl1.ImageIpl = 表示中;
+            sample.Dispose();
+        }
         private void 比較実行()
         {
             Canny実行();//対象の輪郭線含む
-
+            二値化と膨張();
             if (輪郭線差分 != null) 輪郭線差分.Dispose();
-                輪郭線差分 = Canny実行後.Clone();
-                表示中 = 輪郭線差分.Clone();
-                pictureBoxIpl1.ImageIpl = 表示中;
-            //else
-            //{
-            //    輪郭線差分 = Canny2実行後.Clone();
-            //    IplImage notCanny実行後 = Canny実行後.Clone();
-            //    Cv.Not(Canny実行後, notCanny実行後);
-            //    notCanny実行後.Add(Canny2実行後, 輪郭線差分);
-            //    輪郭線差分.Not(輪郭線差分);
 
-            //    表示中 = 輪郭線差分.Clone();
-            //    pictureBoxIpl1.ImageIpl = 表示中;
-            //    notCanny実行後.Dispose();
-            //}
+            輪郭線差分 = 二値化実行後.Clone();
+            IplImage notCanny実行後 = Canny実行後.Clone();
+            Cv.Not(Canny実行後, notCanny実行後);
+            notCanny実行後.Add(二値化実行後, 輪郭線差分);
+            輪郭線差分.Not(輪郭線差分);
+
+            表示中 = 輪郭線差分.Clone();
+            pictureBoxIpl1.ImageIpl = 表示中;
+            notCanny実行後.Dispose();
+        }
+        private void OnClick比較開始(object sender, EventArgs e)
+        {
+            比較実行();
         }
         private void MouseMove_pictureBoxIpl1(object sender, MouseEventArgs e)
         {
@@ -125,6 +134,7 @@ namespace Binpick1
         {
             textBox_CannyTH2.Text = trackBar_CannyTH2.Value.ToString();
             textBox_CannyTH1.Text = trackBar_CannyTH1.Value.ToString();
+            textBox_Binary.Text = trackBar_Binary.Value.ToString();
         }
 
 
@@ -144,7 +154,14 @@ namespace Binpick1
                     trackBar_CannyTH2.Value = isnumber;
 
         }
+        private void TextChanged_Binary(object sender, EventArgs e)
+        {
+            int isnumber;
+            if (int.TryParse(textBox_Binary.Text, out isnumber))
+                if (isnumber >= trackBar_Binary.Minimum && isnumber <= trackBar_Binary.Maximum)
+                    trackBar_Binary.Value = isnumber;
 
+        }
         private void ValueChanged_TB_CannyTH1(object sender, EventArgs e)
         {
             トラックバーの値をテキストボックスに適用();
@@ -157,10 +174,15 @@ namespace Binpick1
             Canny実行();
         }
 
-        private void OnClick比較開始(object sender, EventArgs e)
+
+
+        private void ValueChanged_Binary(object sender, EventArgs e)
         {
-            比較実行();
+            トラックバーの値をテキストボックスに適用();
+            二値化と膨張();
         }
+
+
 
 
 

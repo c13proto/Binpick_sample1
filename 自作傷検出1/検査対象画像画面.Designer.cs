@@ -41,14 +41,18 @@
             this.textBox_y = new System.Windows.Forms.TextBox();
             this.textBox_x = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.trackBar_Binary = new System.Windows.Forms.TrackBar();
+            this.textBox_Binary = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxIpl1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_CannyTH1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_CannyTH2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar_Binary)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBoxIpl1
             // 
-            this.pictureBoxIpl1.Location = new System.Drawing.Point(99, 13);
+            this.pictureBoxIpl1.Location = new System.Drawing.Point(90, 4);
             this.pictureBoxIpl1.Name = "pictureBoxIpl1";
             this.pictureBoxIpl1.Size = new System.Drawing.Size(414, 328);
             this.pictureBoxIpl1.TabIndex = 0;
@@ -160,13 +164,42 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(5, 151);
+            this.button1.Location = new System.Drawing.Point(8, 217);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 27;
             this.button1.Text = "開始";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.OnClick比較開始);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 158);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(41, 12);
+            this.label3.TabIndex = 30;
+            this.label3.Text = "二値化";
+            // 
+            // trackBar_Binary
+            // 
+            this.trackBar_Binary.AutoSize = false;
+            this.trackBar_Binary.Location = new System.Drawing.Point(5, 183);
+            this.trackBar_Binary.Maximum = 255;
+            this.trackBar_Binary.Name = "trackBar_Binary";
+            this.trackBar_Binary.Size = new System.Drawing.Size(79, 19);
+            this.trackBar_Binary.TabIndex = 29;
+            this.trackBar_Binary.Value = 250;
+            this.trackBar_Binary.ValueChanged += new System.EventHandler(this.ValueChanged_Binary);
+            // 
+            // textBox_Binary
+            // 
+            this.textBox_Binary.Location = new System.Drawing.Point(62, 158);
+            this.textBox_Binary.Name = "textBox_Binary";
+            this.textBox_Binary.Size = new System.Drawing.Size(25, 19);
+            this.textBox_Binary.TabIndex = 28;
+            this.textBox_Binary.Text = "250";
+            this.textBox_Binary.TextChanged += new System.EventHandler(this.TextChanged_Binary);
             // 
             // 検査対象画像画面
             // 
@@ -175,6 +208,9 @@
             this.AutoScroll = true;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(515, 344);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.trackBar_Binary);
+            this.Controls.Add(this.textBox_Binary);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.textBox_y);
             this.Controls.Add(this.textBox_x);
@@ -193,6 +229,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxIpl1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_CannyTH1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_CannyTH2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar_Binary)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -213,5 +250,8 @@
         private System.Windows.Forms.TextBox textBox_y;
         private System.Windows.Forms.TextBox textBox_x;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TrackBar trackBar_Binary;
+        private System.Windows.Forms.TextBox textBox_Binary;
     }
 }
