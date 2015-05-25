@@ -49,7 +49,7 @@ namespace Binpick1
             if (二値化実行後 != null) 二値化実行後.Dispose();
             IplImage sample = 編集前.Clone();
             Cv.Threshold(sample, sample, trackBar_Binary.Value, 255, ThresholdType.Binary);
-            Cv.Dilate(sample,sample,null,2);
+            Cv.Dilate(sample,sample,null,3);
             表示中 = sample.Clone();
             二値化実行後 = sample.Clone();
             pictureBoxIpl1.ImageIpl = 表示中;

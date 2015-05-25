@@ -54,16 +54,26 @@ namespace Binpick1
         }
 
 
-        private void Hough変換で円を検出(int canny1,int canny2,int gauss_size,int param1,int param2)
+        private void Hough変換で円を検出(int canny1,int canny2,int th,int gauss_size,int param1,int param2)
         {
-            IplImage raw = 編集前の検査対象画像.Clone();
+            IplImage canny = 編集前の検査対象画像.Clone();
+            IplImage binary = 編集前の検査対象画像.Clone();
+            
             IplImage color = Cv.CreateImage(編集前の検査対象画像.Size, 編集前の検査対象画像.Depth, 3);
 
-            raw.Canny(raw,canny1,canny2);
-            Cv.Smooth(raw, raw, SmoothType.Gaussian, gauss_size * 2 + 1);
+            canny.Canny(canny, canny1, canny2);
+            binary = 二値化と膨張(binary, th);
+
+            IplImage 輪郭線差分 = canny.Clone();
+            IplImage notCanny実行後 = canny.Clone();
+            Cv.Not(canny, notCanny実行後);
+            notCanny実行後.Add(binary, 輪郭線差分);
+            輪郭線差分.Not(輪郭線差分);
+
+            Cv.Smooth(輪郭線差分, 輪郭線差分, SmoothType.Gaussian, gauss_size * 2 + 1);
 
             CvMemStorage storage = new CvMemStorage();
-            CvSeq<CvCircleSegment> circles = Cv.HoughCircles(raw, storage, HoughCirclesMethod.Gradient, 1.0d, 5.0d, param1, param2, 5, 25);
+            CvSeq<CvCircleSegment> circles = Cv.HoughCircles(輪郭線差分, storage, HoughCirclesMethod.Gradient, 1.0d, 5.0d, param1, param2, 5, 25);
 
             if (編集後の検査対象画像 != null) 編集後の検査対象画像.Dispose();
             編集後の検査対象画像 = 編集前の検査対象画像.Clone();
@@ -76,9 +86,18 @@ namespace Binpick1
             Cv.CvtColor(color, 編集後の検査対象画像, ColorConversion.BgrToGray);
 
             color.Dispose();
-            raw.Dispose();
+            canny.Dispose();
+            binary.Dispose();
             storage.Dispose();
             circles.Dispose();
+            notCanny実行後.Dispose();
+            輪郭線差分.Dispose();
+        }
+        private IplImage 二値化と膨張(IplImage src,int th)
+        {
+            Cv.Threshold(src, src, th, 255, ThresholdType.Binary);
+            Cv.Dilate(src, src, null, 3);
+            return src;
         }
         private int 点数計算()
         {
@@ -98,7 +117,7 @@ namespace Binpick1
             else 遺伝的アルゴリズム処理();
         }
 
-        private int 評価結果(int p1,int p2,int p3,int p4,int p5)
+        private int 評価結果(int p1,int p2,int p3,int p4,int p5,int p6)
         {
             int 点数 = 0;
             
@@ -106,7 +125,7 @@ namespace Binpick1
             timer1.Start(); 
             表計算timer = 0;
 
-            Hough変換で円を検出(p1, p2, p3, p4, p5);
+            Hough変換で円を検出(p1, p2, p3, p4, p5,p6);
             点数=-点数計算();
             
             表計算timer = 0;
@@ -115,28 +134,37 @@ namespace Binpick1
 
             return 点数;
         }
-        private void 遺伝子情報を画面に出力(int p1, int p2, int p3, int p4, int p5, int 点数)
+        private void 遺伝子情報を画面に出力(int p1, int p2, int p3, int p4, int p5, int p6,int 点数)
         {
             
             Console.WriteLine("画像出力");
 
-            CvMemStorage storage = new CvMemStorage();
-            IplImage raw = 編集前の検査対象画像.Clone();
-            
+            IplImage canny = 編集前の検査対象画像.Clone();
+            IplImage binary = 編集前の検査対象画像.Clone();
 
-            raw.Canny(raw, p1, p2);
-            Cv.Smooth(raw, raw, SmoothType.Gaussian, p3 * 2 + 1);
-            CvSeq<CvCircleSegment> circles = Cv.HoughCircles(raw, storage, HoughCirclesMethod.Gradient, 1.0d, 5.0d, p4,p5, 5, 25);
-            
+            canny.Canny(canny, p1, p2);
+            binary = 二値化と膨張(binary, p3);
+
+            IplImage 輪郭線差分 = canny.Clone();
+            IplImage notCanny実行後 = canny.Clone();
+            Cv.Not(canny, notCanny実行後);
+            notCanny実行後.Add(binary, 輪郭線差分);
+            輪郭線差分.Not(輪郭線差分);
+
+            Cv.Smooth(輪郭線差分, 輪郭線差分, SmoothType.Gaussian, p4 * 2 + 1);
+
+            CvMemStorage storage = new CvMemStorage();
             IplImage color = new IplImage(編集前の検査対象画像.Size, 編集前の検査対象画像.Depth, 3);
-            Cv.CvtColor(編集前の検査対象画像,color,ColorConversion.GrayToBgr);
+            Cv.CvtColor(編集前の検査対象画像, color, ColorConversion.GrayToBgr);
             CvFont フォント = new CvFont(FontFace.HersheyComplex, 0.5, 0.5);
             Cv.PutText(color, "p1 = " + p1, new CvPoint(10, 20), フォント, new CvColor(0, 0, 255));
             Cv.PutText(color, "p2 = " + p2, new CvPoint(10, 40), フォント, new CvColor(0, 0, 255));
             Cv.PutText(color, "p3 = " + p3, new CvPoint(10, 60), フォント, new CvColor(0, 0, 255));
             Cv.PutText(color, "p4 = " + p4, new CvPoint(10, 80), フォント, new CvColor(0, 0, 255));
             Cv.PutText(color, "p5 = " + p5, new CvPoint(10, 100), フォント, new CvColor(0, 0, 255));
-            Cv.PutText(color, "score= " + 点数, new CvPoint(10, 120), フォント, new CvColor(0, 0, 255));
+            Cv.PutText(color, "p6 = " + p6, new CvPoint(10, 120), フォント, new CvColor(0, 0, 255));
+            Cv.PutText(color, "score= " + 点数, new CvPoint(10, 140), フォント, new CvColor(0, 0, 255));
+            CvSeq<CvCircleSegment> circles = Cv.HoughCircles(輪郭線差分, storage, HoughCirclesMethod.Gradient, 1.0d, 5.0d, p5, p6, 5, 25);
             foreach (CvCircleSegment circle in circles)
             {
                 color.Circle(circle.Center, (int)circle.Radius, CvColor.Red, 2);
@@ -145,8 +173,18 @@ namespace Binpick1
             if (最終工程終了画像 != null) 最終工程終了画像.Dispose();
             最終工程終了画像 = color.Clone();
 
+
+            color.Dispose();
+            canny.Dispose();
+            binary.Dispose();
+            storage.Dispose();
+            circles.Dispose();
+            notCanny実行後.Dispose();
+            輪郭線差分.Dispose();
             フォント.Dispose();
             color.Dispose();
+
+
             
         }
         private void 遺伝的アルゴリズム処理()
@@ -160,11 +198,12 @@ namespace Binpick1
             progressBar1.Maximum = 最終世代;
             int[,] パラメータ ={ //[i,0]=i番目のパラメータの最小値,[i,1]=最大値
                 {int.Parse(textBox_1s.Text),int.Parse(textBox_1e.Text)}, 
-                {int.Parse(textBox_1s.Text),int.Parse(textBox_1e.Text)},
                 {int.Parse(textBox_2s.Text),int.Parse(textBox_2e.Text)},
                 {int.Parse(textBox_3s.Text),int.Parse(textBox_3e.Text)},
-                {int.Parse(textBox_4s.Text),int.Parse(textBox_4e.Text)}, 
-            };          
+                {int.Parse(textBox_4s.Text),int.Parse(textBox_4e.Text)},
+                {int.Parse(textBox_5s.Text),int.Parse(textBox_5e.Text)},
+                {int.Parse(textBox_6s.Text),int.Parse(textBox_6e.Text)}, 
+            };
 
             //第一世代の遺伝子をランダムに作成し、それをいくつか個作る
             //そのあと遺伝子の評価が行われ、点数化される
@@ -190,7 +229,7 @@ namespace Binpick1
                     遺伝子情報をCSV出力(gene, 実験体数, パラメータ.Length / 2,
                       DateTime.Now.ToString("yy-MM-dd_") + 突然変異確率 + "-" + 突然変異の範囲 + "-" + 今の世代);
             }
-            遺伝子情報を画面に出力(gene[0, 0], gene[0, 1], gene[0, 2], gene[0, 3], gene[0, 4], gene[0, 5]);
+            遺伝子情報を画面に出力(gene[0, 0], gene[0, 1], gene[0, 2], gene[0, 3], gene[0, 4], gene[0, 5], gene[0, 6]);
 
 
         }
@@ -213,7 +252,7 @@ namespace Binpick1
 
             for (int i = 0; i < 遺伝子の個数; i++)//パラメータの後(パラメータ数+1番目)に成績を代入
             {
-                gene[i, パラメータ.Length / 2] = 評価結果(gene[i, 0], gene[i, 1], gene[i, 2], gene[i, 3], gene[i, 4]);
+                gene[i, パラメータ.Length / 2] = 評価結果(gene[i, 0], gene[i, 1], gene[i, 2], gene[i, 3], gene[i, 4], gene[i, 5]);
             }
             return gene;
         }
@@ -316,7 +355,7 @@ namespace Binpick1
                     交叉遺伝子[i, j] = 上位の遺伝子[r.Next(上位数), j];
                 }
             for (int i = 0; i < 作成数; i++)//成績を代入
-                交叉遺伝子[i, パラメータ数] = 評価結果(交叉遺伝子[i, 0], 交叉遺伝子[i, 1], 交叉遺伝子[i, 2], 交叉遺伝子[i, 3], 交叉遺伝子[i, 4]);
+                交叉遺伝子[i, パラメータ数] = 評価結果(交叉遺伝子[i, 0], 交叉遺伝子[i, 1], 交叉遺伝子[i, 2], 交叉遺伝子[i, 3], 交叉遺伝子[i, 4], 交叉遺伝子[i, 5]);
 
            return 交叉遺伝子;
         }
@@ -390,7 +429,8 @@ namespace Binpick1
                 {int.Parse(textBox_2s.Text),int.Parse(textBox_2e.Text)},
                 {int.Parse(textBox_3s.Text),int.Parse(textBox_3e.Text)},
                 {int.Parse(textBox_4s.Text),int.Parse(textBox_4e.Text)},
-                {int.Parse(textBox_5s.Text),int.Parse(textBox_5e.Text)}, 
+                {int.Parse(textBox_5s.Text),int.Parse(textBox_5e.Text)},
+                {int.Parse(textBox_6s.Text),int.Parse(textBox_6e.Text)}, 
             };
 
             //親は[0~1,],子は[2~3,]に戻す
@@ -416,7 +456,7 @@ namespace Binpick1
                 局所集団 = 次の局所集団を作成(局所集団, パラメータ);
                 for (int i = 0; i < 4; i++)
                 {
-                    局所集団[i, パラメータ.Length / 2] = 評価結果(局所集団[i, 0], 局所集団[i, 1], 局所集団[i, 2], 局所集団[i, 3], 局所集団[i, 4]);
+                    局所集団[i, パラメータ.Length / 2] = 評価結果(局所集団[i, 0], 局所集団[i, 1], 局所集団[i, 2], 局所集団[i, 3], 局所集団[i, 4], 局所集団[i, 5]);
 
                 }
                 Console.WriteLine(今の世代);
@@ -432,7 +472,7 @@ namespace Binpick1
             }
 
             局所集団 = 遺伝子を成績順にソート(局所集団, 4, パラメータ.Length / 2);
-            遺伝子情報を画面に出力(局所集団[0, 0], 局所集団[0, 1], 局所集団[0, 2], 局所集団[0, 3], 局所集団[0, 4], 局所集団[0, 5]);
+            遺伝子情報を画面に出力(局所集団[0, 0], 局所集団[0, 1], 局所集団[0, 2], 局所集団[0, 3], 局所集団[0, 4], 局所集団[0, 5], 局所集団[0, 6]);
             Console.WriteLine("PfGA終了");
             progressBar1.Value = 最終世代;
 
@@ -526,7 +566,7 @@ namespace Binpick1
             //パラメータから点数を評価
             for (int i = 0; i < 4; i++)
             {
-                group[i, パラメータ.Length / 2] = 評価結果(group[i, 0], group[i, 1], group[i, 2], group[i, 3], group[i, 4]);
+                group[i, パラメータ.Length / 2] = 評価結果(group[i, 0], group[i, 1], group[i, 2], group[i, 3], group[i, 4], group[i, 5]);
                 //Console.WriteLine("" + group[i, 0] + "," + group[i, 1] + "," + group[i, 2] + "," + group[i, 3] + "," + group[i, 4] + "," + group[i, 5] + "\n");
             }
             if (group[0, パラメータ.Length / 2] > group[1, パラメータ.Length / 2])
@@ -665,10 +705,11 @@ namespace Binpick1
             progressBar1.Maximum = 目標累計;
             int[,] パラメータ ={ //[i,0]=i番目のパラメータの最小値,[i,1]=最大値
                 {int.Parse(textBox_1s.Text),int.Parse(textBox_1e.Text)}, 
-                {int.Parse(textBox_1s.Text),int.Parse(textBox_1e.Text)},
                 {int.Parse(textBox_2s.Text),int.Parse(textBox_2e.Text)},
                 {int.Parse(textBox_3s.Text),int.Parse(textBox_3e.Text)},
-                {int.Parse(textBox_4s.Text),int.Parse(textBox_4e.Text)}, 
+                {int.Parse(textBox_4s.Text),int.Parse(textBox_4e.Text)},
+                {int.Parse(textBox_5s.Text),int.Parse(textBox_5e.Text)},
+                {int.Parse(textBox_6s.Text),int.Parse(textBox_6e.Text)}, 
             };
             //親は[0~1,],子は[2~3,]に戻す
             int[,] 局所集団 = new int[4, パラメータ.Length / 2 + 1];
@@ -684,7 +725,7 @@ namespace Binpick1
                 while (!ノルマ達成)
                 {
                     局所集団 = 次の局所集団を作成(局所集団, パラメータ);
-                    for (int i = 0; i < 4; i++) 局所集団[i, パラメータ.Length / 2] = 評価結果(局所集団[i, 0], 局所集団[i, 1], 局所集団[i, 2], 局所集団[i, 3], 局所集団[i, 4]);
+                    for (int i = 0; i < 4; i++) 局所集団[i, パラメータ.Length / 2] = 評価結果(局所集団[i, 0], 局所集団[i, 1], 局所集団[i, 2], 局所集団[i, 3], 局所集団[i, 4], 局所集団[i, 5]);
                     for (int i = 0; i < 4; i++)
                     {
                         if (局所集団[i, パラメータ.Length / 2] >= int.Parse(目標スコア[0]) && 局所集団[i, パラメータ.Length / 2] <= int.Parse(目標スコア[1]))
